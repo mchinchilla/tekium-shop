@@ -21,7 +21,7 @@ Renombrar el archivo __.env.template__ a __.env__
 
 Completar las variables de entorno en el archivo __.env__
 
-## Llenar la Base de Datos con informarción de pruebas
+## Llenar la Base de Datos con información de pruebas
 
 ```
 http://localhost:3000/api/seed
