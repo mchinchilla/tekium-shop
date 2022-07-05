@@ -22,18 +22,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 const searchProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
-    const { query = '' } = req.query;
+    let { query = '' } = req.query;
 
 
     if (query.length === 0) {
         return res.status(400).json({message: `Bad request. Missing query.`});
     }
 
-    query.toString().toLowerCase();
+    query = query.toString().toLowerCase();
 
     await db.connect();
 
-    // @ts-ignore
     const products = await Product.find({
         $text: { $search: query }
     })
