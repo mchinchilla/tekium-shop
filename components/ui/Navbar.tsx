@@ -86,8 +86,6 @@ export const Navbar = () => {
                     )
                 }
 
-
-
                 {/* Pantallas pequeñas */}
                 <IconButton
                     sx={{ display: { xs: 'flex', sm: 'none' } }}
