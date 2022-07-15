@@ -1,4 +1,6 @@
+import {useContext, useState} from "react";
 import { NextPage, GetStaticPaths, GetStaticProps } from "next";
+import {useRouter} from "next/router";
 
 import {Box, Button, Chip, Grid, Link, Rating, TextField, Typography} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -9,8 +11,9 @@ import {ShopLayout} from "../../components/layouts";
 import {ProductSlideshow, SizeSelector} from "../../components/products";
 import {ItemCounter} from "../../components/ui";
 
-import {IProduct} from "../../interfaces";
+import {ICartProduct, IProduct, ISize} from "../../interfaces";
 import { dbProducts } from "../../database";
+import {CartContext} from "../../context";
 
 interface Props {
     product: IProduct;
@@ -25,7 +28,53 @@ const StyledRating = styled(Rating)({
     },
 });
 
+
+
 const ProductPage : NextPage<Props> = ( { product } ) => {
+
+    const router = useRouter();
+
+    const { addProductToCart } = useContext(CartContext);
+
+    const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
+        _id : product._id,
+        image : product.images[0],
+        price : product.price,
+        size : undefined,
+        slug : product.slug,
+        title : product.title,
+        gender : product.gender,
+        rate : product.rate,
+        quantity : 1,
+    });
+
+
+    const onSelectedSize = ( size: ISize ) => {
+        setTempCartProduct( currentProduct => ({
+            ...currentProduct,
+            size: size
+        }));
+    }
+
+    const onUpdatedQuantity = (newQuantity: number) => {
+        setTempCartProduct( currentProduct => ({
+            ...currentProduct,
+            quantity: newQuantity,
+        }));
+    }
+
+
+    const onAddProduct = () => {
+        if ( !tempCartProduct.size ) { return; }
+
+        // TODO: llamar la accion del context para agregar el producto al carrito
+        addProductToCart(tempCartProduct);
+
+        //console.log({ tempCartProduct });
+        router.push('/cart');
+
+    }
+
 
     return (
         <ShopLayout title={ product.title } pageDescription={ product.description }>
@@ -44,17 +93,36 @@ const ProductPage : NextPage<Props> = ( { product } ) => {
                         <Box sx={{my: 2}}>
                             <Typography variant='subtitle2'>Cantidad</Typography>
                             {/* Item Counter  */}
-                            <ItemCounter count={1}/>
+                            <ItemCounter
+                                currentValue={ tempCartProduct.quantity  }
+                                maxValue={ product.inStock > 10 ? 10 : product.inStock }
+                                updatedQuantity={ onUpdatedQuantity }
+                            />
                             <SizeSelector
-                                // selectedSize={ product.sizes[0] }
+                                selectedSize={ tempCartProduct.size }
                                 sizes={product.sizes}
+                                onSelectedSize={ onSelectedSize }
                             />
                         </Box>
+
                         {/*  Add Carrito  */}
-                        <Button color="secondary" sx={{borderRadius: '8px'}}>
-                            Agregar al Carrito
-                        </Button>
-                        {/*<Chip label="No hay disponibles"  color="error" variant='outlined' />*/}
+                        {
+                            (product.inStock > 0)
+                                ? (
+                                    <Button color="secondary" sx={{borderRadius: '8px'}} onClick={ onAddProduct }>
+                                        {
+                                            tempCartProduct.size
+                                            ? 'Agregar al Carrito'
+                                            : 'Selecciona un tamaño'
+                                        }
+                                    </Button>
+
+                                )
+                                : (
+                                    <Chip label="No hay disponibles" color="error" variant='outlined'/>
+                                )
+                        }
+
 
                         {/*  Descripcion  */}
                         <Box sx={{mt: 3}}>
@@ -65,7 +133,6 @@ const ProductPage : NextPage<Props> = ( { product } ) => {
                             <StyledRating
                                 name="product-rating"
                                 defaultValue={2.5}
-                                //getLabelText={(value: number) => `${product.rate} Heart${product.rate !== 1 ? 's' : ''}`}
                                 precision={0.1}
                                 value={product.rate}
                                 icon={<FavoriteIcon fontSize="inherit"/>}
@@ -76,7 +143,7 @@ const ProductPage : NextPage<Props> = ( { product } ) => {
                                     // TODO: update product rate in the Database if user is authenticated and has bought the product
                                 }}
                             />
-                            <Button variant={'outlined'} color={'success'}>
+                            <Button variant='outlined' color='success'>
                                 Agregar comentario
                             </Button>
                         </Box>

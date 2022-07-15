@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from 'react';
 import NextLink from 'next/link';
 
 import {IProduct} from "../../interfaces";
-import {Box, Card, CardActionArea, CardMedia, Grid, Link, Rating, Typography} from "@mui/material";
+import {Box, Card, CardActionArea, CardMedia, Chip, Grid, Link, Rating, Typography} from "@mui/material";
 import { styled } from '@mui/material/styles';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -37,6 +37,16 @@ export const ProductCard: FC<Props> = ({product}) => {
                 <NextLink href={ `/product/${ product.slug }` } passHref prefetch={ false }>
                     <Link>
                         <CardActionArea>
+                            {
+                                (product.inStock === 0) && (
+
+                                    <Chip
+                                        color="primary"
+                                        label='No disponible'
+                                        sx={{position: 'absolute', zIndex: 99, top: '10px', left: '10px'}}
+                                    />
+                                )
+                            }
                             <CardMedia
                                 component='img'
                                 image={productImage}

@@ -1,4 +1,4 @@
-import {FC} from "react";
+import {FC, useContext} from "react";
 import NextLink from "next/link";
 
 import {initialData} from '../../database/products';
@@ -6,6 +6,8 @@ import {Box, Button, CardActionArea, CardMedia, Grid, IconButton, Link, Typograp
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import {ItemCounter} from "../ui";
+import {CartContext} from "../../context";
+import {ICartProduct} from "../../interfaces";
 
 
 interface Props {
@@ -13,26 +15,30 @@ interface Props {
 }
 
 
-const ProductsInCart = [
-    initialData.products[0],
-    initialData.products[1],
-    initialData.products[2]
-];
 
 export const CartList: FC<Props> = ( { editable= false } ) => {
+
+    const { cart, updateCartQuantity, removeCartProduct } = useContext(CartContext);
+
+    const onNewCartQuantityValue = ( product: ICartProduct, newQunatityValue: number ) => {
+        product.quantity = newQunatityValue;
+        updateCartQuantity(product);
+
+    }
+
 
     return (
         <>
             {
-                ProductsInCart.map( product => (
-                    <Grid container spacing={2} key={product.slug} sx={{ mb:1 }}>
+                cart.map( product => (
+                    <Grid container spacing={2} key={product.slug + product.size } sx={{ mb:1 }}>
                         <Grid item xs={3}>
                             {/* Todo: llevar a la pagina del producto */}
-                            <NextLink href='/product/slug' passHref>
+                            <NextLink href={ `/product/${product.slug}` } passHref>
                                 <Link>
                                     <CardActionArea>
                                         <CardMedia
-                                            image={ `/products/${product.images[0] }`}
+                                            image={ `/products/${product.image }`}
                                             component='img'
                                             sx={{ borderRadius: '5px' }}
                                         >
@@ -47,12 +53,18 @@ export const CartList: FC<Props> = ( { editable= false } ) => {
                                 flexDirection='column'
                             >
                                 <Typography variant='body1' >{ product.title }</Typography>
-                                <Typography variant='body1' >Talla: <strong>M</strong></Typography>
+                                <Typography variant='body1' >Talla: <strong>{ product.size }</strong></Typography>
                                 {/* Condicional    */}
                                 {
                                     editable
-                                    ? <ItemCounter count={1}/>
-                                    : <Typography>3 Items</Typography>
+                                    ? (
+                                        <ItemCounter
+                                            currentValue={ product.quantity }
+                                            maxValue={ 10 }
+                                            updatedQuantity={ (newValue) => onNewCartQuantityValue( product, newValue ) }
+                                        />
+                                        )
+                                    : <Typography>{ product.quantity } { product.quantity > 1 ? 'productos' : 'producto' } </Typography>
                                 }
                             </Box>
                         </Grid>
@@ -61,7 +73,7 @@ export const CartList: FC<Props> = ( { editable= false } ) => {
                             {/* Condicion si es Editable   */}
                             {
                                 editable && (
-                                    <IconButton aria-label="delete" size="large" color="error">
+                                    <IconButton aria-label="delete" size="large" color="error" onClick={ () => removeCartProduct(product) }>
                                         <DeleteIcon fontSize="inherit" />
                                     </IconButton>
                                 )
