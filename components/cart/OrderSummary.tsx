@@ -1,28 +1,36 @@
+import {useContext} from "react";
 import {Divider, Grid, Typography} from "@mui/material";
+
+import {CartContext} from "../../context";
+import { currency } from "../../utils";
 
 
 export const OrderSummary = () => {
+
+    const { numberOfItems, subTotal, tax, total } = useContext(CartContext);
+
+
     return (
         <Grid container={true}
 
         >
             <Grid item={true} xs={6}>
-                <Typography>No. Items</Typography>
+                <Typography>No. Productos</Typography>
             </Grid>
             <Grid item={true} xs={6} display={'flex'}  justifyContent={'end'}>
-                <Typography>3</Typography>
+                <Typography>{ numberOfItems } { numberOfItems > 1 ? 'productos' : 'producto' }</Typography>
             </Grid>
             <Grid item={true} xs={6}>
                 <Typography>SubTotal</Typography>
             </Grid>
             <Grid item={true} xs={6} display={'flex'}  justifyContent={'end'}>
-                <Typography>{ `$${ 105.36 }` }</Typography>
+                <Typography>{ currency.format(subTotal) }</Typography>
             </Grid>
             <Grid item={true} xs={6}>
-                <Typography>Impuestos (15%)</Typography>
+                <Typography>Impuestos ({ Number(process.env.NEXT_PUBLIC_TAX_RATE) * 100 }%)</Typography>
             </Grid>
             <Grid item={true} xs={6} display={'flex'}  justifyContent={'end'}>
-                <Typography>{ `$${ 35.34 }` }</Typography>
+                <Typography>{ currency.format(tax) }</Typography>
             </Grid>
 
             <Grid item={true} xs={6} sx={{ mt:2 }}>
@@ -30,7 +38,7 @@ export const OrderSummary = () => {
             </Grid>
             <Divider sx={{ color: 'black' }}/>
             <Grid item={true} xs={6} sx={{ mt:2 }} display={'flex'}  justifyContent={'end'}>
-                <Typography variant={'subtitle1'}>{ `$${ 186.56 }` }</Typography>
+                <Typography variant={'subtitle1'}>{ currency.format(total) }</Typography>
             </Grid>
 
         </Grid>
