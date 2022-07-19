@@ -64,7 +64,6 @@ const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => 
     catch (error) {
         console.log(error);
         await db.disconnect();
-
         return res.status(500).json({ message: 'Error al registrar usuario, revisar logs en el servidor' });
     }
 
