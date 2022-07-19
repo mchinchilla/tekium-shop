@@ -1,7 +1,6 @@
 import {FC, useContext} from "react";
 import NextLink from "next/link";
 
-import {initialData} from '../../database/products';
 import {Box, Button, CardActionArea, CardMedia, Grid, IconButton, Link, Typography} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 
