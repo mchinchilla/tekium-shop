@@ -16,3 +16,8 @@ export const isEmail = (email: string): string | undefined => {
         ? undefined
         : 'El correo no parece ser válido';
 }
+
+
+export const isValidLength = (value: string, min: number, max: number): boolean => {
+    return value.length >= min && value.length <= max;
+}

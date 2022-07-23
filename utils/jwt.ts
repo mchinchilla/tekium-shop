@@ -18,3 +18,28 @@ export const signToken = (_id: string, email: string ) => {
     );
 
 }
+
+
+export const isValidToken = ( token: string ) : Promise<string> => {
+    if( !process.env.JWT_SECRET_SEED ) {
+        throw new Error('JWT_SECRET_SEED no esta definida, revisar variables de entorno');
+    }
+
+    return new Promise( (resolve, reject) => {
+       try {
+              const decoded = jwt.verify( token, process.env.JWT_SECRET_SEED || '', ( error, payload ) => {
+                    if( error ) {
+                        reject( 'JWT no es valido' );
+                    }
+                    else {
+                        const { _id } = payload as { _id: string };
+                        resolve( _id );
+                    }
+              } );
+       }
+       catch (error) {
+           console.log(error);
+           reject( 'JWT no es valido' );
+       }
+    });
+}
