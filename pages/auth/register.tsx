@@ -1,4 +1,5 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
+import {useRouter} from "next/router";
 import NextLink from "next/link";
 
 import {AuthLayout} from "../../components/layouts";
@@ -7,6 +8,7 @@ import {useForm} from "react-hook-form";
 import {tekiumApi} from "../../api";
 import { validations } from "../../utils";
 import {ErrorOutline, InfoOutlined} from "@mui/icons-material";
+import {AuthContext} from "../../context";
 
 type FormData = {
     name: string,
@@ -16,6 +18,9 @@ type FormData = {
 
 
 const RegisterPage = () => {
+
+    const { registerUser } = useContext(AuthContext);
+    const router = useRouter();
 
     const {register, handleSubmit, formState: {errors}} = useForm<FormData>();
     const [showError, setShowError] = useState(false);
@@ -29,25 +34,24 @@ const RegisterPage = () => {
         setEnableButton(false);
         setResponseMessage('');
 
-        try {
-            const { data } = await tekiumApi.post('/user/register', {name, email, password});
-            const { token, user, message } = data;
-            setEnableButton(true);
-            console.log({ token, user, message });
-            setShowSuccess(true);
-            setResponseMessage(message);
-            setTimeout(() => { setShowSuccess(false) }, 3000);
-        } catch (error: any) {
-            const { message } = error.response.data;
-            // console.log( error );
-            // console.log( message );
-            setResponseMessage(message);
+        const { hasError, message } = await registerUser(name, email, password);
+
+        if ( hasError ) {
+            setResponseMessage( message );
             setShowError(true);
             setEnableButton(true);
             setTimeout(() => {
                 setShowError(false)
             }, 3000);
+            return;
         }
+
+        setEnableButton(true);
+        setShowSuccess(true);
+        setResponseMessage(message);
+        setTimeout(() => { setShowSuccess(false) }, 3000);
+
+        router.replace('/');
 
     }
 

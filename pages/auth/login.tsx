@@ -1,11 +1,12 @@
-import {useState} from "react";
+import {useRouter} from "next/router";
+import {useContext, useState} from "react";
 import NextLink from "next/link";
 import { useForm } from "react-hook-form";
 import { AuthLayout } from "../../components/layouts";
 import { Box, Button, Chip, Grid, Link, TextField, Typography } from "@mui/material";
 import { validations } from "../../utils";
-import { tekiumApi } from "../../api";
 import { ErrorOutline } from "@mui/icons-material";
+import {AuthContext} from "../../context";
 
 type FormData = {
     email: string,
@@ -14,6 +15,9 @@ type FormData = {
 
 const LoginPage = () => {
 
+    const router = useRouter();
+
+    const { loginUser } = useContext(AuthContext);
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
     const [showError, setShowError] = useState(false);
@@ -24,19 +28,17 @@ const LoginPage = () => {
         setShowError(false);
         setEnableButton(false);
 
-        try {
-
-            const { data } = await tekiumApi.post('/user/login', { email, password });
-            const { token, user } = data;
-            setEnableButton(true);
-            console.log({ token, user });
-
-        } catch (error) {
-            console.log(error);
+        const isValidLogin = await loginUser(email, password);
+        console.log(email, password);
+        if(!isValidLogin) {
             setShowError(true);
             setEnableButton(true);
             setTimeout(() => { setShowError(false) }, 3000);
+            return;
         }
+        setEnableButton(true);
+
+        router.replace('/');
 
     }
 
