@@ -1,9 +1,11 @@
 import {FC, useEffect, useReducer} from "react";
-import {AuthContext, authReducer} from "./";
-import {IRegisterUser, IUser} from "../../interfaces";
-import {tekiumApi} from "../../api";
+import {useRouter} from "next/router";
+
+import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
-import axios from "axios";
+import {IRegisterUser, IUser} from "../../interfaces";
+import {AuthContext, authReducer} from "./";
+import {tekiumApi} from "../../api";
 
 interface Props {
     children: React.ReactNode;
@@ -24,6 +26,8 @@ export const AuthProvider: FC<Props> = ({ children }) => {
 
     const [state, dispatch] = useReducer(authReducer, AUTH_INITIAL_STATE);
 
+    const router = useRouter();
+
     useEffect(() => {
         return () => {
             checkToken();
@@ -31,6 +35,10 @@ export const AuthProvider: FC<Props> = ({ children }) => {
     }, []);
 
     const checkToken = async() => {
+
+        if ( !Cookies.get("token") ) {
+            return;
+        }
 
         try {
             const { data } = await tekiumApi.get('/user/validate-token');
@@ -69,20 +77,25 @@ export const AuthProvider: FC<Props> = ({ children }) => {
             }
         }
         catch(error) {
-            if (axios.isAxiosError(error)) {
+            if (axios.isAxiosError(error as AxiosError)) {
                 return {
                     hasError: true,
-                    message: error.response?.data.message,
+                    message: 'Error al registrar usuario',
                 }
             }
+
 
             return {
                 hasError: true,
                 message: 'Ocurrió un error al registrar el usuario',
             }
         }
+    }
 
-
+    const logoutUser = async () => {
+        Cookies.remove('token');
+        Cookies.remove('cart');
+        router.reload();
     }
 
     return (
@@ -91,6 +104,7 @@ export const AuthProvider: FC<Props> = ({ children }) => {
             // Methods
             loginUser,
             registerUser,
+            logoutUser,
         }}>
             { children }
         </AuthContext.Provider>
