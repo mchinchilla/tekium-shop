@@ -1,9 +1,9 @@
 
-
 import jwt from 'jsonwebtoken';
 
 
 export const signToken = (_id: string, email: string ) => {
+
     if( !process.env.JWT_SECRET_SEED ) {
         throw new Error('JWT_SECRET_SEED no esta definida, revisar variables de entorno');
     }
@@ -16,7 +16,6 @@ export const signToken = (_id: string, email: string ) => {
         // opciones
         { expiresIn: '30d' },
     );
-
 }
 
 
