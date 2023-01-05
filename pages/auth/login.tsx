@@ -102,6 +102,7 @@ const LoginPage = () => {
                               <NextLink
                                   href={ router.query.p ? `/auth/register?p=${router.query.p}` : '/auth/register' }
                                   passHref
+                                  legacyBehavior
                               >
                                   <Link underline='always'>
                                       ¿No tienes cuenta?

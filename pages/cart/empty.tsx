@@ -22,7 +22,7 @@ const EmptyPage = () => {
         flexDirection='column'
     >
         <Typography  >Su Carrito esta vacio</Typography>
-        <NextLink href='/' passHref>
+        <NextLink href='/' passHref legacyBehavior >
             <Link typography="h4" color='secondary'>
                 Regresar
             </Link>

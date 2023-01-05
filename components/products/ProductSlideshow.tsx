@@ -25,7 +25,6 @@ export const ProductSlideshow : FC<Props> = ( { images } ) => {
                                 backgroundSize: 'cover',
                                 borderRadius: '8px',
                             }}>
-
                             </div>
                         </div>
                     )

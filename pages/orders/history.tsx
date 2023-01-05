@@ -27,21 +27,21 @@ const columns: GridColDef[] = [
         renderCell: ( params: GridValueGetterParams ) => {
             return <Grid container justifyContent={'space-between'} display={'flex'}>
                 <Grid item>
-                    <NextLink href={`/orders/${params.row.id}`} passHref >
+                    <NextLink href={`/orders/${params.row.id}`} passHref legacyBehavior>
                         <Link>
                             <EditOutlined />
                         </Link>
                     </NextLink>
                 </Grid>
                 <Grid item>
-                    <NextLink href={`/orders/${params.row.id}`} passHref >
+                    <NextLink href={`/orders/${params.row.id}`} passHref legacyBehavior >
                         <Link>
                             <DeleteOutline />
                         </Link>
                     </NextLink>
                 </Grid>
                 <Grid item>
-                    <NextLink href={`/orders/${params.row.id}`} passHref >
+                    <NextLink href={`/orders/${params.row.id}`} passHref legacyBehavior >
                         <Link>
                             <PaymentOutlined />
                         </Link>
