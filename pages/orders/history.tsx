@@ -1,6 +1,6 @@
 import {ShopLayout} from "../../components/layouts";
 import {Chip, Grid, Link, Typography} from "@mui/material";
-import {DataGrid, GridColDef, GridValueGetterParams} from "@mui/x-data-grid";
+import {DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams} from "@mui/x-data-grid";
 import NextLink from "next/link";
 import {DeleteOutline, EditOutlined, PaymentOutlined} from "@mui/icons-material";
 
@@ -12,7 +12,7 @@ const columns: GridColDef[] = [
         headerName: 'Pagado',
         description: 'Muestra la información de si la orden fue pagada o no',
         width: 120,
-        renderCell: ( params: GridValueGetterParams ) => {
+        renderCell: ( params: GridRenderCellParams<string | string[]> ) => {
             return params.row.paid
                 ? <Chip color={'success'} label={'Pagada'} variant={'outlined'} size={'small'} />
                 : <Chip color={'error'} label={'Pendiente'} variant={'outlined'} size={'small'} />;
@@ -24,7 +24,7 @@ const columns: GridColDef[] = [
         description: 'Muestra las acciones que se pueden realizar sobre la orden',
         width: 100,
         sortable: false,
-        renderCell: ( params: GridValueGetterParams ) => {
+        renderCell: ( params: GridRenderCellParams<string | string[]> ) =>  {
             return <Grid container justifyContent={'space-between'} display={'flex'}>
                 <Grid item>
                     <NextLink href={`/orders/${params.row.id}`} passHref legacyBehavior>
