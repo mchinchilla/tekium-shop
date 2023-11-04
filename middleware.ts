@@ -1,19 +1,26 @@
-import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
-import { jwt } from './utils';
-import { RequestCookie } from "next/dist/server/web/spec-extension/cookies";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-export async function middleware( request: NextRequest, event: NextFetchEvent ) {
+export async function middleware(req: NextRequest) {
 
-    if (request.nextUrl.pathname.startsWith('/checkout')) {
-        const token: RequestCookie | undefined = request.cookies.get('token');
-        console.log('Token:' , token);
+    const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-        try {
-            await jwt.isValidToken( token? token.value : '' );
-            return NextResponse.next();
-        } catch ( error ) {
-            const requestedPage = request.page;
-            return NextResponse.redirect( `/auth/login?p=${ requestedPage }` );
-        }
+    console.log({ session  });
+
+    if (!session) {
+        const requestedPage = req.nextUrl.pathname;
+        const url = req.nextUrl.clone();
+        url.pathname = `/auth/login`;
+        url.search = `p=${requestedPage}`;
+        return NextResponse.redirect(url);
     }
+
+    return NextResponse.next();
 }
+
+
+// See "Matching Paths" below to learn more
+export const config = {
+    matcher: ['/checkout/address', '/checkout/summary']
+};

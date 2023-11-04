@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import {IRegisterUser, IUser} from "../../interfaces";
 import {AuthContext, authReducer} from "./";
 import {tekiumApi} from "../../api";
+import { useSession, signOut } from "next-auth/react";
 
 interface Props {
     children: React.ReactNode;
@@ -26,13 +27,24 @@ export const AuthProvider: FC<Props> = ({ children }) => {
 
     const [state, dispatch] = useReducer(authReducer, AUTH_INITIAL_STATE);
 
+    const { data, status } = useSession();
+
+
     const router = useRouter();
 
-    useEffect(() => {
+    useEffect( () => {
+        if( status == 'authenticated') {
+            console.log( { user: data?.user });
+            dispatch( { type: '[Auth] - Login', payload: data?.user as IUser } );
+        }
+    }, [status, data ] );
+    
+
+/*    useEffect(() => {
         return () => {
             checkToken();
         };
-    }, []);
+    }, []);*/
 
     const checkToken = async() => {
 
@@ -93,9 +105,20 @@ export const AuthProvider: FC<Props> = ({ children }) => {
     }
 
     const logoutUser = async () => {
-        Cookies.remove('token');
+
         Cookies.remove('cart');
-        router.reload();
+        Cookies.remove('firstName');
+        Cookies.remove('lastName');
+        Cookies.remove('address');
+        Cookies.remove('address2');
+        Cookies.remove('zip');
+        Cookies.remove('city');
+        Cookies.remove('country');
+        Cookies.remove('phone');
+
+        // Cookies.remove('token');
+        // router.reload();
+        await signOut();
     }
 
     return (

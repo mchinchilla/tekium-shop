@@ -10,8 +10,8 @@ type Data =
     | {
   token: string,
   user: {
-    email: string,
-    name: string,
+    email: string | unknown,
+    name: string | unknown,
     role: string
   }
 }
@@ -53,7 +53,7 @@ const checkJWT = async (req: NextApiRequest,  res: NextApiResponse<Data>) => {
 
   return res.status(200).json({
     message: 'Login correcto',
-    token: jwt.signToken( _id, email ),
+    token: jwt.signToken( _id, email ?? '' ),
     user: {
       email, role, name
     }

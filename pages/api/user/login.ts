@@ -10,7 +10,7 @@ type Data =
   token: string,
   user: {
     email: string,
-    name: string,
+    name: string | unknown,
     role: string
   }
 }
